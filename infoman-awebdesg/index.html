@@ -1,0 +1,257 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>School Canteen POS</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: auto;
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 2.5em;
+      }
+
+      h3 {
+        color: #667eea;
+        margin-top: 25px;
+        margin-bottom: 15px;
+        border-bottom: 3px solid #667eea;
+        padding-bottom: 10px;
+      }
+
+      .form-group {
+        margin-bottom: 12px;
+      }
+
+      input,
+      select {
+        padding: 12px 15px;
+        width: 100%;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1em;
+        transition: all 0.3s;
+      }
+
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      button {
+        padding: 12px 20px;
+        width: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-top: 10px;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+      }
+
+      th {
+        background: #667eea;
+        color: white;
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+      }
+
+      td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      tr:hover {
+        background: #f9f9f9;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 20px;
+        }
+
+        h1 {
+          font-size: 1.8em;
+        }
+
+        table {
+          font-size: 0.9em;
+        }
+
+        th,
+        td {
+          padding: 10px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>🍽️ School Canteen POS</h1>
+
+      <h3>📝 Transaction Entry</h3>
+
+      <div class="form-group">
+        <input type="text" id="studentName" placeholder="Student Name" />
+      </div>
+      <div class="form-group">
+        <input type="text" id="course" placeholder="Course" />
+      </div>
+      <div class="form-group">
+        <select id="item">
+          <option value="">Select Item</option>
+          <option value="Rice Meal|50|Meal">Rice Meal</option>
+          <option value="Juice|20|Drink">Juice</option>
+          <option value="Snacks|15|Snack">Snacks</option>
+          <option value="Bottled Water|10|Drink">Bottled Water</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <input type="number" id="quantity" placeholder="Quantity" />
+      </div>
+      <div class="form-group">
+        <select id="payment">
+          <option value="">Payment Method</option>
+          <option>Cash</option>
+          <option>GCash</option>
+        </select>
+      </div>
+
+      <button onclick="addTransaction()">Add Transaction</button>
+
+      <h3>📊 Transaction Records</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Student</th>
+            <th>Course</th>
+            <th>Item</th>
+            <th>Type</th>
+            <th>Price</th>
+            <th>Qty</th>
+            <th>Total</th>
+            <th>Payment</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+    <script>
+      let transactions = [];
+      let idCounter = 1;
+
+      function addTransaction() {
+        let studentName = document.getElementById("studentName").value;
+        let course = document.getElementById("course").value;
+        let itemData = document.getElementById("item").value;
+        let quantity = parseInt(document.getElementById("quantity").value);
+        let payment = document.getElementById("payment").value;
+
+        if (!studentName || !course || !itemData || !quantity || !payment) {
+          alert("Please fill all fields!");
+          return;
+        }
+
+        let [itemName, price, type] = itemData.split("|");
+        price = parseFloat(price);
+
+        let total = price * quantity;
+
+        let transaction = {
+          id: idCounter++,
+          studentName,
+          course,
+          itemName,
+          type,
+          price,
+          quantity,
+          total,
+          payment,
+        };
+
+        transactions.push(transaction);
+        displayTransactions();
+        clearFields();
+      }
+
+      function displayTransactions() {
+        let tableBody = document.getElementById("tableBody");
+        tableBody.innerHTML = "";
+
+        transactions.forEach((t) => {
+          let row = `
+                        <tr>
+                                <td>${t.id}</td>
+                                <td>${t.studentName}</td>
+                                <td>${t.course}</td>
+                                <td>${t.itemName}</td>
+                                <td>${t.type}</td>
+                                <td>₱${t.price}</td>
+                                <td>${t.quantity}</td>
+                                <td><strong>₱${t.total}</strong></td>
+                                <td>${t.payment}</td>
+                        </tr>
+                `;
+          tableBody.innerHTML += row;
+        });
+      }
+
+      function clearFields() {
+        document.getElementById("studentName").value = "";
+        document.getElementById("course").value = "";
+        document.getElementById("item").value = "";
+        document.getElementById("quantity").value = "";
+        document.getElementById("payment").value = "";
+      }
+    </script>
+  </body>
+</html>
